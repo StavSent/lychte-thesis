@@ -18,18 +18,18 @@
 % \newevenside
 
 % % chapter 2 = Θεωρητικό Υπόβαθρο
-% - HTTP
-% - REST CALLS/APIS
+% - HTTP ======== DONE
+% - API/ REST + WEBSOCKET ========== DONE
 % - ?SaaS?
-% - dbs -> sql vs nosql and why nosql is better in this system
-% - object storage (google cloud storage)
-% - avro file format (explain what it is and why its good)
+% - avro file format (explain what it is and why its good) ========== DONE
+% - (probably not) στατιστικά που χρησιμοποιούνται (μέση τιμέ, διάμεσος, διασπορά, τεταρτημόρια) ========== DONE
+% - ******εργαλεία******
 % - node server (?express?) + pm2
-% - (probably not) στατιστικά που χρησιμοποιούνται (μέση τιμέ, διάμεσος, διασπορά, τεταρτημόρια)
-% - Socket.io (used in one of the implementations, could also be added in the future instead of only rest api's)
+% - dbs -> sql vs nosql and why nosql is better in this system ======= LEFT OUT
+% - object storage (google cloud storage) ======= LEFT OUT
+% - Socket.io (used in one of the implementations, could also be added in the future instead of only rest api's) -> could be mentioned in tools (its an abstract layer over websockets)
 
 \input{./chapters/chapter2/index.tex}
-\newevenside
 \newevenside
 
 % % chapter 3 = State of the art
@@ -45,20 +45,57 @@
 % commercial products - Better Uptime, Pulsetic, Datadog, Freshping, Hyperping, UptimeRobot
 % open souce - Upptime, Uptime Kuma, Cabot, Zabbix, Sensu
 
+\input{./chapters/chapter3/index.tex}
+\newevenside
+
 % % chapter 4 = Υλοποίηση του συστήματος
 % 1η Υλοποίηση - Χρήση απλών schedulers και ενός express server που κρατούσαν όλα τα requests μόνο όσο "ζούσε" ο server.
 % 2η Υλοποίηση - Προσθήκη στο προηγούμενο ενός κοινού σημείου (socket.io). Σε αυτή την υλοποίηση θα υπήρχαν 1server με τον οποιό θα "επικοινωνούσε" ο χρήστης και πολλοί server "clients" που θα μιλούσαν με τον αρχικό. Η χρήση websockets/socket.io θα ήταν εξαιρετική, καθώς θα μπορούσε σε κάποιες περιτπώσεις να οφελεί η αμφίφρομη εποικοινωνία server και worker, αλλά το γεγονός ότι οι περισσότερες επικοινωνίες θασ είναι μονόδρομες μάλλον μας ωθεί να χρησιμοποιήσουμε έναν κλασικό http server. Επίσης το scaling ενός websocket server είναι αρκετά πιο περίπλοκο και δύσκολο στη συντήρηση.
 % 3η Υλοποίηση - Χρήση ενός ή περισοοτέρων (εφόσον χρειαστεί) server και ένας ή περισσότερη workers (scalable). Η κεντρικός server εξυπειρετεί μόνο την επικοινωνία μεταξύ worker και χρήστη και είναι υπεύθυνος για τη δημιουργία, καταστροφή, τροποποίηση ήδη υπάρχοντων jobs. Κάθε worker έχει το δικό του scheduler και εκτελεί τα δικά του jobs/apis καθώς και ένα cleanup jobs μία φορά τη βδομάδα που κάνει Upload τα raw responses, κάποια χρήσιμα στοιχεία σε ξεχωριστά αρχεία καθώς και υπολογίζει/επαναυπολογίζει χρήσιμες στατιστικές τιμές για κάθε μέρα (εδώ αναφορά στο πως περίπου λειτουργεί ο scheduler και εξήγηση της λειτουργίας του άμα "πέσει")
 
+% 1ή υλοποίηση - η πιο απλή και μη λειτουργική. Ένας node server. Κάθε φορά που έρχεται qpi request σηκώνει καινούργιο setInterval με συγκεκριμένο interval κάθε φορά. Ιδανικό γιατί δεν θα έχεις ποτέ πρόβλημα με τον χρόνο
+% 	μεταξύ διαδοχικών request επειδή είναι ακριβές. Κακή απόδοση όταν ο αριθμός των request αυξηθεί πάρα πολύ. Ξεχωριστά timer αυξάνουν την πολυπλοκότητα. Επίσης θα υπάρχει πρόβλημα όταν "πέφτει" ο server εξαιτίας κάποιου πιθανού
+%	προβλήματος. Ακόμα και να κρατάμε τα jobs σε κάποια βάση δεν θα ξέρουμε πότε πρέπει να ξανατρέξουν. Αν πχ έχεις κάποιο
+%	api να τρέχει κάθε 30s και μόλις εκτελεστεί "πεσει" ο server. Τότε θα πρέπει είτε να μην ξεκινήσεις το job και να χάσεις πιθανώς ένα request
+% 	είτε να τρέξεις το job ότν και να γίνει και να έχεις διπλοεγγραφές.
+
+% 2ή υλοποίηση - ένας node http και socketio/server και ένας ή παραπάνω socketio/client server. O main server θα είναι υπεύθυνος για το routing
+%	των apis και οι υπόλοιποιν θα λαμβάνουν μηνυματα και θα τα εκτελούν ξεκινώντας πάλι setIntevral με συγκεκριμένα interval το καθένα
+%	έτσι λύνται το πρόβλημα του πιθανού overload του main server. Ο λόγος χρήσης websockets είναι για να έχεις πιο γρήγορη και άμεση επικοινωνία
+%	μεταξύ των server (worker και main) - επικοινωνία που εξυπηρετεί στην επισκόπηση του συστήματος (πόσα μηνύματα έχει κάθε worker) και μαζική μεταφορά μηνυμάτων
+%	σε περίπτωση που πέσει κάποιος server. Επίσης websockets εξαιρετικά πιο γρήγορη σε σχέση με http.
+%	επίσης επειδή το connection μεταξύ server και worker γίβεται μία φορά γλιτώνεις τα overhead από όλα τα πιθανά http requests που θα έκανες
+
+% 3η υλοποίηση - ένας http server (ή παραπάνω αν χρειαστεί για καλύτερη εξυπηρέτηση) που απλώς servιρουν δεδομένα.
+%	worker και server δεν επικοινωνούν μεταξύ τους, αλλά έχοιυν ένα κοινό΄σημείο αναφοράς (db).
+% 	κάθε worker έχει ένα όνομα προκειμένου να ξέρει από που θα αντλήσει ποληροφορία
+%	μετά ξεκίνα να μιλάς για το πως προκύπτουν τα στατιστικά. Μίλα για cleanup job και το πως ακριβώς λειτουργεί
+% 	ανέφερε avro και το πως η standarized μορφή της πληροφορίας που αποθηκεύεται το καθιστά
+%	μία πολύ καλή επιλογή για την αποθήκευση της πληροφορίας
+
 % % chapter 5 = Επίδειξη Συστήματος
 % - Παρουσίαση εικόνων από website
 % - Εξήγεισαι τι δείχνουν και λειτουργικότητα
+
+% ****ακράιες συνθήκες λειτουργίας συστήματος - πειράματα*******
+% 	σε local βάση (πειράματα για 1ώρα) - κράτα σε αρχεία usage statiustics για το node process (ram, cpu, ....) ανά λεπτό
+%	1) 50 apis σε ένα worker
+%	2) 100 apis σε ένα worker
+%	3) 200 apis σε ένα worker
+%	4) 400 apis σε ένα worker
+%	5) 400 apis σε ένα worker
+% για καθένα από τα παραπάνω υπολόγιζε μέσο βαθμό απόκλισης από το expected interval και βάλε από δίπλα αποτελέσματα ram usage και cpu usage των threads εφόσον γίνεται
+
 
 \newevenside
 %\newevenside
 
 \renewcommand{\bibname}{Βιβλιογραφία}
-\bibliography{./bibliography/chapter1.bib, ./bibliography/chapter2.bib}
+\bibliography{
+	./bibliography/chapter1.bib,
+	./bibliography/chapter2.bib,
+	./bibliography/chapter3.bib
+}
 
 \end{document}
 

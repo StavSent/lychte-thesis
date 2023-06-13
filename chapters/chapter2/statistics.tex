@@ -1,0 +1,37 @@
+\break
+
+\section{Στατιστικές μετρικές}
+\label{section:statistics}
+
+Στην υποενότητα αυτή θα δούμε τον τρόπο υπολογισμού μερικών κλασικών μετρικών της στατιστικής
+που χρησιμοποιούνται για την εξαγωγή συμπερασμάτων στο σύνολο των δεδομένων που αποθηκεύουμε.
+Σε όλους τους παρακάτω τύπους έχουμε δεδομένα $x_i$ όπου, $i = 0, ..., k$
+
+\begin{enumerate}
+	\item \textbf{Αριθμητική Μέση Τιμή}:
+	      \begin{equation}
+		      mean(x) = \frac{\sum_{n = 1}^{k} x_n}{k}
+	      \end{equation}
+	\item \textbf{Διάμεσος}:
+	      \begin{equation}
+		      median(x) =
+		      \begin{cases}
+			      x_{\frac{n + 1}{2}}                             & \text{για n περιττό}
+			      \\[10pt]
+			      \frac{x_{\frac{n}{2}} + x_{\frac{n}{2} + 1}}{2} & \text{για n ζυγό}
+		      \end{cases}
+	      \end{equation}
+	\item \textbf{Τυπική Απόκλιση Πληθυσμού}:
+	      \begin{equation}
+		      std(x) = \sqrt{\frac{\sum_{i = 1}^{n} (x_i - mean(x))^2}{n - 1}}
+	      \end{equation}
+	\item \textbf{Τεταρτημόρια}:
+	      \begin{equation}
+				\begin{cases}
+					q1(x) = mean(x_i) & \text{όπου i = 0, ...., k/2} \\
+					q3(x) = mean(x_j) & \text{όπου j = k/2 + 1, ...., k}
+				\end{cases}
+	      \end{equation}
+\end{enumerate}
+
+\break
