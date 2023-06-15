@@ -54,8 +54,7 @@ project μικρότερου βεληνεκούς που επιτυγχάνου�
 	      εξαιτίας του χρόνου που παίρνει για να φορτώσει δεδομένα ή η απότομη πτώση του πλήθους των χρηστών μίας σελίδας.
 	      Για να επιτύχει τέτοιας μορφής ελέγχους παράγει (ανάλογα με τον τύπο των ελέγχων που επιλέγουμε)
 	      ένα script γραμμένο σε JavaScript που τοποθείται στην αρχή της ιστοσελίδας την οποία θέλουμε να παρακολουθήσουμε.
-	      Με αυτό τον τρόπο έχουν τη δυνατότητα συλλογής δεδομένων πραγματικών χρηστών. Στο πλαίσιο της Ενεργής βέβαια παρακολούθησης
-	      η έλλειψη διαγραμμάτων καθιστά το εργαλείο λίγο πιο δύσκολο στην κατανόηση της μεγαλύτερης εικόνας (\autoref{fig:uptimia}).
+	      Με αυτό τον τρόπο έχουν τη δυνατότητα συλλογής δεδομένων πραγματικών χρηστών.
 	      \begin{figure}[!ht]
 		      \centering
 		      \includegraphics[width=0.7\textwidth]{./images/chapter3/uptimia.png}
@@ -63,6 +62,8 @@ project μικρότερου βεληνεκούς που επιτυγχάνου�
 		      \label{fig:uptimia}
 	      \end{figure}
 \end{itemize}
+
+\break
 
 Παραπάνω αναφέρθηκαν μερικά μόνο κάποια από τα εργαλεία που υπάρχουν σήμερα για την Ενεργη Παρακολούθηση του Χρόνου
 και Απόκρισης Ιστοτόπων και Διαδικτυακών Εφαρμογών. Σε αυτά θα πρέπει να προστεθούν πληθώρα εφαρμογών όπως τα:
@@ -122,6 +123,8 @@ project μικρότερου βεληνεκούς που επιτυγχάνου�
 	\item Διάθεση τρόπων ειδοποίησης του χρήστη σε περίπτωση που κάποιο από τα συστήματα δεν ανταποκρίνεται
 	\item Δυνατότητα για οριζόντια κλιμάκωση (\textbf{horizontal scaling})
 	\item Ελαχιστοποίηση downtime του συστήματος 
+	\item Πλήρης παραμετροποίηση του μηνύματος που αποστέλλεται (κατάλληλη ρύθμιση headers, body και query)
+	\item Ρύθμιση του χρόνου μεταξύ διαδοχικών μυνημάτων
 \end{enumerate}
 
 Πολλές απο τις εφαρμογές που είδαμε καλύπτουν σε κάποιο βαθμό μερικά από τα παραπάνω, αλλά καμία
@@ -130,6 +133,26 @@ project μικρότερου βεληνεκούς που επιτυγχάνου�
 κρύβοντας δεδομένα που είτε δεν αποθηκεύουν πλέον είτε δεν μπορούν να αντλήσουν αρκετά γρήγορα.
 Απο την άλλη οι περισσότερες open source εφαρμογές που αναφέραμε δεν μπορούν να κάνουν τόσο εύκολα scaling
 καθώς είναι φτιαγμένες να δουλεύουν για περιορισμένο πλήθος χρηστών. 
+
+\begin{table}[H]
+	\begin{center}
+		\caption{Σύγκριση Εργαλείων Ενεργής Παρακολούθησης}
+		\label{tab:active_monitoring_characteristics}
+		\begin{tabular}{| p{40mm} | c | c | c | c | c | c |}
+			\hline & \thead{Υλοποίηση \\ μας} & \thead{Better \\ Uptime} & \thead{Uptime \\ Robot} & \thead{Site24x7} & \thead{Uptimia} & \thead{Kuma} \tabularnewline
+			\hline \thead{Σταθερότητα} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \tabularnewline
+			\hline \thead{Βάση Δεδομένων} & \checkmark  & \checkmark  & \checkmark & \checkmark & \checkmark & \tabularnewline
+			\hline \thead{Ιστορικά Δεδομένα} & \checkmark & & & & & \tabularnewline
+			\hline \thead{Διαγράμματα} & \checkmark & \checkmark & & \checkmark & \checkmark & \tabularnewline
+			\hline \thead{Ειδοποιήσεις} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \tabularnewline
+			\hline \thead{Ελαχιστοποίηση \\ Downtime} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \tabularnewline
+			\hline \thead{Παραμετροποίηση \\ μηνυμάτων} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \tabularnewline
+			\hline \thead{Ρύθμιση Χρόνου \\ μεταξύ μηνυμάτων} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \tabularnewline
+			\hline \thead{Οριζόντια \\ Κλιμάκωση} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \tabularnewline
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
 
 Στη διπλωματική αυτή εργασία λοιπόν καλούμαστε να δημιουργήσουμε ένα τέτοιο υπολογιστικό σύστημα
 που θα καλύπτει τα προαναφερθέντα.
