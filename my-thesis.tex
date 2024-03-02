@@ -1,0 +1,32 @@
+\documentclass[a4paper,12 pt,twoside]{report}
+\usepackage{fullpage}
+
+\usepackage{mystyle}
+\pagenumbering{arabic}
+
+\begin{document}
+
+\input{./chapters/chapter0/index.tex}
+\newevenside
+
+\input{./chapters/chapter1/index.tex}
+
+\input{./chapters/chapter2/index.tex}
+
+\input{./chapters/chapter3/index.tex}
+
+\input{./chapters/chapter4/index.tex}
+
+\input{./chapters/chapter5/index.tex}
+
+\input{./chapters/chapter6/index.tex}
+
+\renewcommand{\bibname}{Βιβλιογραφία}
+\bibliography{
+	./bibliography/chapter1.bib,
+	./bibliography/chapter2.bib,
+	./bibliography/chapter3.bib
+}
+
+\end{document}
+
